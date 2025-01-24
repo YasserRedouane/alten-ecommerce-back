@@ -1,27 +1,50 @@
-# Getting Started
+# Alten Ecommerce API Project
 
-### Reference Documentation
-For further reference, please consider the following sections:
+## Overview
 
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/3.4.2/maven-plugin)
-* [Create an OCI image](https://docs.spring.io/spring-boot/3.4.2/maven-plugin/build-image.html)
-* [Spring Web](https://docs.spring.io/spring-boot/3.4.2/reference/web/servlet.html)
-* [Spring Data JPA](https://docs.spring.io/spring-boot/3.4.2/reference/data/sql.html#data.sql.jpa-and-spring-data)
-* [Spring Boot DevTools](https://docs.spring.io/spring-boot/3.4.2/reference/using/devtools.html)
+This is a Spring Boot-based application designed for managing an e-commerce platform. The application is currently configured to run on port **8080**.
 
-### Guides
-The following guides illustrate how to use some features concretely:
+## Features
 
-* [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
-* [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
-* [Building REST services with Spring](https://spring.io/guides/tutorials/rest/)
-* [Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)
+- **In-memory database**: The application uses an H2 in-memory database, which can be accessed via the H2 Console at:\
+  [http://localhost:8080/h2-console/](http://localhost:8080/h2-console/)
+- **Authentication**: User authentication is integrated, ensuring secure access to the API endpoints.
 
-### Maven Parent overrides
+## How to Run the Postman Collection
 
-Due to Maven's design, elements are inherited from the parent POM to the project POM.
-While most of the inheritance is fine, it also inherits unwanted elements like `<license>` and `<developers>` from the parent.
-To prevent this, the project POM contains empty overrides for these elements.
-If you manually switch to a different parent and actually want the inheritance, you need to remove those overrides.
+To interact with the API, a Postman collection is provided with pre-configured requests. Below are the steps to run the collection:
+
+1. **Start the Application**:
+
+    - Make sure the Spring Boot application is running on port 8080.
+
+2. **Access the Postman Collection**:
+
+    - Open Postman.
+    - import the file "alten-ecommerce-api.postman_collection" file.
+
+3. **Create a User**:
+
+    - Start by running the "Create User" request in the Postman collection. This step is essential to generate user credentials.
+
+4. **Automatic Authentication**:
+
+    - The collection is configured to automatically handle login.
+    - After creating a user, subsequent requests will trigger a login request to generate an authentication token.
+    - The token is automatically added to the `Authorization` header of all requests, ensuring authenticated access to the API endpoints.
+
+5. **Run Any Endpoint**:
+
+    - Once a user is created, you can run any request in the collection. The authentication process ensures all requests are properly secured.
+
+## Notes
+
+- Ensure you check the H2 database console for data persistence during the application runtime.
+- Default database credentials for the H2 Console are configured in `application.properties`. Typically:
+    - **JDBC URL**: `jdbc:h2:mem:testdb`
+    - **Username**: `sa`
+    - **Password**: password
+
+With these steps, you should be able to run and test all API endpoints seamlessly using Postman.
+
 
