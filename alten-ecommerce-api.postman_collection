@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "8f5b8343-aeef-481f-9473-6f7003d945fb",
+		"_postman_id": "20735dab-44c7-4138-bc9f-e524ff4890ff",
 		"name": "Ecommerce API",
 		"description": "This collection represents endpoints to be tested.\n\n**AccountController** contains:\n- Register user\n- Login user\n\n**ProductController** contains:\n- Create Product (Only user with admin@admin.com)\n- Get All Products\n- Get Product By Id\n- Update Product (Only user with admin@admin.com)\n- Delete Product (Only user with admin@admin.com)\n\n**CartController** contains:\n- Get Cart\n- Add Product to Cart\n- Remove Product From Cart\n- Update Product Quantity\n\n**WishListController** contains:\n- Get WishList\n- Add Product To WishList\n- Remove Product From WishList",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
@@ -118,7 +118,13 @@
 					"name": "Get All Products",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{baseUrl}}/products",
 							"host": [
@@ -135,7 +141,13 @@
 					"name": "Get Product by ID",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{baseUrl}}/products/:id",
 							"host": [
@@ -147,7 +159,8 @@
 							],
 							"variable": [
 								{
-									"key": "id"
+									"key": "id",
+									"value": "1"
 								}
 							]
 						}
@@ -215,7 +228,8 @@
 							],
 							"variable": [
 								{
-									"key": "id"
+									"key": "id",
+									"value": "1"
 								}
 							]
 						}
