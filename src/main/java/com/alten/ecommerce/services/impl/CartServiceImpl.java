@@ -13,9 +13,11 @@ import com.alten.ecommerce.repositories.CartRepository;
 import com.alten.ecommerce.repositories.ProductRepository;
 import com.alten.ecommerce.repositories.UserRepository;
 import com.alten.ecommerce.services.CartService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -41,6 +43,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+    @Transactional
     public CartResponse addProductToCart(Long userId, CartRequest cartItemRequest) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
@@ -48,18 +51,24 @@ public class CartServiceImpl implements CartService {
         Product product = productRepository.findById(cartItemRequest.getProductId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + cartItemRequest.getProductId()));
 
-        Cart newCart = cartRepository.findByUser(user)
+        Cart cart = cartRepository.findByUser(user)
                 .orElseGet(() -> cartRepository.save(Cart.builder().user(user).build()));
 
         CartItem cartItem = CartItem.builder()
-                .cart(newCart).product(product).quantity(cartItemRequest.getQuantity()).build();
+                .cart(cart)
+                .product(product)
+                .quantity(cartItemRequest.getQuantity()).build();
         CartItem savedCartItem = cartItemRepository.save(cartItem);
 
-        newCart.getItems().add(savedCartItem);
+        // Ensure items list is not null
+        if (cart.getItems() == null) {
+            cart.setItems(new ArrayList<>());
+        }
+        cart.getItems().add(savedCartItem);
 
-        cartRepository.save(newCart);
+        cartRepository.save(cart);
 
-        return cartMapper.fromEntityToResponse(newCart);
+        return cartMapper.fromEntityToResponse(cart);
     }
 
     @Override

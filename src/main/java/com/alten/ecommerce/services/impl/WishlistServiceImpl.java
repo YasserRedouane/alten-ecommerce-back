@@ -15,7 +15,9 @@ import com.alten.ecommerce.repositories.WishlistRepository;
 import com.alten.ecommerce.services.WishlistService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,6 +40,7 @@ public class WishlistServiceImpl implements WishlistService {
     }
 
     @Override
+    @Transactional
     public WishlistResponse addProductToWishlist(Long userId, WishlistItemRequest wishlistItemRequest) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
@@ -48,15 +51,38 @@ public class WishlistServiceImpl implements WishlistService {
         Wishlist wishlist = wishlistRepository.findByUser(user)
                 .orElseGet(() -> wishlistRepository.save(Wishlist.builder().user(user).build()));
 
-        WishlistItem wishlistItem = WishlistItem.builder().wishlist(wishlist).product(product).build();
-        WishlistItem savedWishlistItem = wishlistItemRepository.save(wishlistItem);
+        // Ensure wishlist items list is initialized
+        if (wishlist.getItems() == null) {
+            wishlist.setItems(new ArrayList<>());
+        }
 
-        wishlist.getItems().add(savedWishlistItem);
+        // Check if the product already exists in the wishlist
+        WishlistItem existingItem = wishlist.getItems().stream()
+                .filter(item -> item.getProduct().getId().equals(product.getId()))
+                .findFirst()
+                .orElse(null);
+
+        if (existingItem != null) {
+            // Increment the quantity and update the totalItemPrice
+            existingItem.setQuantity(existingItem.getQuantity() + 1);
+            wishlistItemRepository.save(existingItem);
+        } else {
+            // Add a new item to the wishlist
+            WishlistItem wishlistItem = WishlistItem.builder()
+                    .wishlist(wishlist)
+                    .product(product)
+                    .quantity(1)
+                    .build();
+            WishlistItem savedWishlistItem = wishlistItemRepository.save(wishlistItem);
+
+            wishlist.getItems().add(savedWishlistItem);
+        }
 
         wishlistRepository.save(wishlist);
 
         return wishlistMapper.fromEntityToResponse(wishlist);
     }
+
 
     @Override
     public WishlistResponse removeProductFromWishlist(Long userId, Long productId) {
@@ -86,4 +112,5 @@ public class WishlistServiceImpl implements WishlistService {
                 .map(wishlistMapper::fromEntityToResponse)
                 .collect(Collectors.toList());
     }
+
 }

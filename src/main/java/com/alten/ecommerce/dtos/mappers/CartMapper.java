@@ -16,8 +16,10 @@ import java.util.List;
 public interface CartMapper {
 
     @Mappings({
+            @Mapping(source = "id", target = "cartId"),
+            @Mapping(source = "user.id", target = "userId"),
             @Mapping(source = "items", target = "cartItems"),
-            @Mapping(source = "user.id", target = "userId")
+            @Mapping(expression = "java(calculateTotalPrice(cart))", target = "totalPrice")
     })
     CartResponse fromEntityToResponse(Cart cart);
 
@@ -29,4 +31,11 @@ public interface CartMapper {
     @Mapping(source = "quantity", target = "quantity")
     @Mapping(expression = "java(cartItem.getProduct().getPrice() * cartItem.getQuantity())", target = "totalItemPrice")
     CartItemResponse fromCartItemToResponse(CartItem cartItem);
+
+    default Double calculateTotalPrice(Cart cart) {
+        return cart.getItems()
+                .stream()
+                .mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity())
+                .sum();
+    }
 }
