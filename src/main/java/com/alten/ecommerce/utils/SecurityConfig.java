@@ -29,12 +29,12 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/h2-console/**").permitAll()  // Allow H2 console access
-                        .requestMatchers("/account", "/account/token").permitAll()  // Allow public endpoints
-                        .anyRequest().authenticated()  // Require authentication for all other requests
+                        .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/account", "/account/token").permitAll()
+                        .anyRequest().authenticated()
                 )
                 .csrf(csrf -> csrf.disable())  // Disable CSRF for stateless JWT authentication
-                .headers(headers -> headers.frameOptions(frameOptionsConfig -> frameOptionsConfig.sameOrigin()))  // Allow H2 console headers
+                .headers(headers -> headers.frameOptions(frameOptionsConfig -> frameOptionsConfig.sameOrigin()))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);  // Add JWT filter before UsernamePasswordAuthenticationFilter
 
         return http.build();

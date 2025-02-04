@@ -29,9 +29,4 @@ public class User {
 
     private String password;
 
-    @OneToMany
-    private List<Product> wishlist;
-
-    @OneToMany
-    private List<Product> cart;
 }

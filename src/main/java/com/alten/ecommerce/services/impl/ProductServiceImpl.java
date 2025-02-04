@@ -13,6 +13,8 @@ import com.alten.ecommerce.utils.ProductValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,6 +37,7 @@ public class ProductServiceImpl implements ProductService {
 
         Product product = productMapper.fromRequestToEntity(productRequest);
         ProductValidator.validateProduct(product, false);
+        product.setCreatedAt(LocalDateTime.now());
         Product savedProduct = productRepository.save(product);
         return productMapper.fromEntityToResponse(savedProduct);
     }
@@ -65,8 +68,12 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + id));
 
         Product updatedProduct = productMapper.fromRequestToEntity(productRequest);
+
         updatedProduct.setId(existingProduct.getId());
+        updatedProduct.setCreatedAt(existingProduct.getCreatedAt());
+
         ProductValidator.validateProduct(updatedProduct, true);
+        updatedProduct.setUpdatedAt(LocalDateTime.now());
 
         Product savedProduct = productRepository.save(updatedProduct);
         return productMapper.fromEntityToResponse(savedProduct);

@@ -11,7 +11,7 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    private String secretKey = "yourSecretKey"; // Use a more secure key in production
+    private String secretKey = "yourSecretKey";
 
     // Generate JWT Token
     public String generateToken(String email) {
